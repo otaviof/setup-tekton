@@ -1,0 +1,38 @@
+---
+name: use-action
+
+on:
+  push:
+    tags-ignore:
+      - '**'
+    branches:
+      - '**'
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  use-action:
+    name: use-action
+    runs-on: ubuntu-latest
+    steps:
+      # preparing the Kubernetes cluster# (KinD) and installing kubectl
+      - uses: helm/kind-action@v1.4.0
+        with:
+          wait: 120s
+
+      # checking out the project code on the current workspace
+      - uses: actions/checkout@v3
+
+      # self loading the action.yaml definitions, making possible to run the action defined on this
+      # project directly
+      - uses: ./
+
+      # assert the changes performed by this action
+      - shell: bash
+        run: |
+          ./assert.sh
