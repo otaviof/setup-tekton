@@ -9,8 +9,11 @@ jobs:
   setup-tekton:
     steps:
       # using KinD to provide the Kubernetes instance and kubectl
-      - uses: helm/kind-action@v1.4.0
-      # setting up Tekton and auxiliary components...
+      - uses: helm/kind-action@v1.5.0
+        with:
+          cluster_name: kind
+
+      # setting up Tekton Pipelines, CLI and additional components...
       - uses: otaviof/setup-tekton@main
 ```
 

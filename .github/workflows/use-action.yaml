@@ -21,8 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # preparing the Kubernetes cluster# (KinD) and installing kubectl
-      - uses: helm/kind-action@v1.4.0
+      - uses: helm/kind-action@v1.5.0
         with:
+          cluster_name: kind
           wait: 120s
 
       # checking out the project code on the current workspace
@@ -30,7 +31,11 @@ jobs:
 
       # self loading the action.yaml definitions, making possible to run the action defined on this
       # project directly
-      - uses: ./
+      - env:
+          INPUT_TEKTON_VERSION: v0.45.0
+          INPUT_REGISTRY_HOSTNAME: registry.registry.svc.cluster.local
+          INPUT_CLI_VERSION: v0.29.1
+        uses: ./
 
       # assert the changes performed by this action
       - shell: bash
