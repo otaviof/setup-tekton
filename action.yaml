@@ -1,0 +1,59 @@
+---
+name: Tekton Setup (CI)
+description: |
+  Installs Tekton Pipelines in the informed Kubernetes KinD instance, includes a local Container
+  Registry and the `tkn` cli.
+branding:
+  color: blue
+  icon: anchor
+inputs:
+  tekton_version:
+    description: Tekton Pipelines release version
+    required: false
+    default: v0.45.0
+  cli_version:
+    description: Tekton CLI release version
+    required: false
+    default: v0.29.1
+  setup_registry:
+    description: When enabled, the action deploys a Container Registry instance
+    required: false
+    default: "true"
+  registry_hostname:
+    description: Container Registry hostname inside KinD
+    required: false
+    default: registry.registry.svc.cluster.local
+  patch_etc_hosts:
+    description: Patch "/etc/hosts" to alias the Container Registry hostname to "127.0.0.1"
+    required: false
+    default: "true"
+runs:
+  using: composite
+  steps:
+    # pre-flight checks, making sure the dependencies needed for the upcoming steps are available
+    - shell: bash
+      working-directory: ${{ github.action_path }}
+      run: ./probe.sh
+
+    # deploying the container registry when input flag is set, waiting for the deployment to reach
+    # ready status before proceeding
+    - shell: bash
+      if: ${{ inputs.setup_registry == 'true' }}
+      working-directory: ${{ github.action_path }}
+      run: ./install-registry.sh
+
+    # deploying tekton pipline controller and dependencies, waiting for it to reach ready status
+    - shell: bash
+      working-directory: ${{ github.action_path }}
+      run: ./install-tekton.sh
+
+    # patches the /etc/hosts to include the container registry hostname resolving to 127.0.0.1
+    - shell: bash
+      if: ${{ inputs.patch_etc_hosts == 'true' }}
+      working-directory: ${{ github.action_path }}
+      run: sudo --preserve-env ./patch-etc-hosts.sh
+
+    # installs the pre-compiled Tekton CLI
+    - shell: bash
+      working-directory: ${{ github.action_path }}
+      run: ./install-cli.sh
