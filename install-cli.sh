@@ -19,6 +19,9 @@ readonly CLI_URL="https://github.com/${CLI_HOST_PATH}/${INPUT_CLI_VERSION}/${CLI
 readonly TMP_DIR="/tmp"
 readonly OUTPUT_DOCUMENT="${TMP_DIR}/${CLI_TARBALL}"
 
+# making sure the previous download is removed
+[[ -f "${OUTPUT_DOCUMENT}" ]] && rm -fv ${OUTPUT_DOCUMENT}
+
 phase "Downloading CLI tarball '${CLI_URL}'"
 wget --output-document="${OUTPUT_DOCUMENT}" ${CLI_URL}
 tar -C ${TMP_DIR} -zxvpf ${OUTPUT_DOCUMENT} tkn
