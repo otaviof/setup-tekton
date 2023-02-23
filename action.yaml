@@ -40,20 +40,36 @@ runs:
     - shell: bash
       if: ${{ inputs.setup_registry == 'true' }}
       working-directory: ${{ github.action_path }}
+      env:
+        INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
+        INPUT_REGISTRY_HOSTNAME: ${{ inputs.registry_hostname }}
+        INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: ./install-registry.sh
 
     # deploying tekton pipline controller and dependencies, waiting for it to reach ready status
     - shell: bash
       working-directory: ${{ github.action_path }}
+      env:
+        INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
+        INPUT_REGISTRY_HOSTNAME: ${{ inputs.registry_hostname }}
+        INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: ./install-tekton.sh
 
     # patches the /etc/hosts to include the container registry hostname resolving to 127.0.0.1
     - shell: bash
       if: ${{ inputs.patch_etc_hosts == 'true' }}
       working-directory: ${{ github.action_path }}
+      env:
+        INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
+        INPUT_REGISTRY_HOSTNAME: ${{ inputs.registry_hostname }}
+        INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: sudo --preserve-env ./patch-etc-hosts.sh
 
     # installs the pre-compiled Tekton CLI
     - shell: bash
       working-directory: ${{ github.action_path }}
+      env:
+        INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
+        INPUT_REGISTRY_HOSTNAME: ${{ inputs.registry_hostname }}
+        INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: ./install-cli.sh
