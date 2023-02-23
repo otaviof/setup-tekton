@@ -10,7 +10,7 @@ jobs:
     steps:
       # using KinD to provide the Kubernetes instance and kubectl
       - uses: helm/kind-action@v1.4.0
-	  # setting up Tekton and auxiliary components...
+      # setting up Tekton and auxiliary components...
       - uses: otaviof/setup-tekton@main
 ```
 
