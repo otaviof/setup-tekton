@@ -1,7 +1,11 @@
-`setup-tekton`
---------------
+`setup-tekton` GitHub Actions
+-----------------------------
 
-# Usage
+Action to rollout [Tekton Pipelines][githubTektonPipeline], [CLI (`tkn`)][githubTektonCLI] and a [Container-Registry][containerRegistry] instance, setting up the environment for testing using these components.
+
+# GitHub Action Usage
+
+Example usage below with inputs using default values:
 
 ```yaml
 ---
@@ -9,25 +13,79 @@ jobs:
   setup-tekton:
     steps:
       # using KinD to provide the Kubernetes instance and kubectl
-      - uses: helm/kind-action@v1.5.0
+      - uses: helm/kind-action@main
         with:
           cluster_name: kind
 
       # setting up Tekton Pipelines, CLI and additional components...
       - uses: otaviof/setup-tekton@main
-```
-
-## Inputs
-
-```yaml
-jobs:
-  use-action:
-    steps:
-      - uses: otaviof/setup-tekton@main
-        with:
           tekton_version: v0.45.0
           cli_version: v0.29.1
           setup_registry: "true"
           registry_hostname: registry.registry.svc.cluster.local
           patch_etc_hosts: "true"
 ```
+
+The action uses the current Kubernetes instance available ([KinD][sigsKinD] for example), thus requires `kubectl` on the `${PATH}`.
+
+## Inputs
+
+| Input               | Required | Description                                     |
+|:--------------------|:--------:|:------------------------------------------------|
+| `tekton_version`    | `false`  | Target Tekton Pipeline version                  |
+| `cli_version`       | `false`  | Target Tekton CLI version                       |
+| `setup_registry`    | `false`  | Rollout a Container-Registry (v2)               |
+| `registry_hostname` | `false`  | Container-Registry hostname                     |
+| `patch_etc_hosts`   | `false`  | Add Container-Registry hostname to `/etc/hosts` |
+
+
+# Components
+
+## Tekton Pipelines
+
+[Tekton Pipelines][githubTektonPipeline] is deployed on the namespace `tekton-pipelines` and the involved deployments are followed until completion, so the setup process waits until the instances are available and in case of error the workflow is interrupted.
+
+## CLI (`tkn`)
+
+[Tekton CLI][githubTektonCLI] is installed on `/usr/local/bin` directory and uses the same Kubernetes context than `kubectl`.
+
+## Container-Registry
+
+A [Container-Registry][containerRegistry] instance is deployed on the `registry` namespace using the same rollout approach than Tekton Pipelines.
+
+The registry is available by default on the port `32222` and uses the informed hostname, by default `registry.registry.svc.cluster.local`, which means the container images will look like the example below:
+
+```text
+registry.registry.svc.cluster.local:32222/namespace/project:tag
+```
+
+The registry does not require authentication and uses HTTP protocol, it will be available outside of the Kubernetes instance as well, the input `patch_etc_hosts` makes the registry hostname resolve to `127.0.0.1` and the registry service expose the port `32222` as a `hostPort` as well.
+
+# Scripts
+
+Alternatively, you can run the scripts directly to rollout Tekton Pipelines and the other components, the recommended approach is using a `.env` file with the required [inputs](./inputs.sh).
+
+```bash
+cat >.env <<EOS
+export INPUT_TEKTON_VERSION="v0.41.0"
+export INPUT_REGISTRY_HOSTNAME="registry.registry.svc.cluster.local"
+export INPUT_CLI_VERSION="v0.29.1"
+EOS
+
+source .env
+```
+
+There are plugins to automatically load the `.env` file, but once the required environment variables are set, you can invoke each script individually:
+
+```bash
+./install-tekton.sh
+./install-registry.sh
+sudo ./install-cli.sh
+```
+
+The script name reflects the component deployed and they are idempotent, you can execute them more than once without side effects.
+
+[sigsKinD]: https://kind.sigs.k8s.io
+[githubTektonCLI]: https://github.com/tektoncd/cli
+[githubTektonPipeline]: https://github.com/tektoncd/pipeline
+[containerRegistry]: https://docs.docker.com/registry/spec/api/
