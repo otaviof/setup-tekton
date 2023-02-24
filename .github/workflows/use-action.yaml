@@ -17,7 +17,6 @@ on:
 
 jobs:
   use-action:
-    name: use-action
     runs-on: ubuntu-latest
     steps:
       # preparing the Kubernetes cluster# (KinD) and installing kubectl
