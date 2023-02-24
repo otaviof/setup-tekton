@@ -1,5 +1,5 @@
 #
-# Helper Functions
+# Enviroment Variables with Default Values
 #
 
 # namespace name for the container registry
@@ -8,10 +8,14 @@ readonly export REGISTRY_NAMESPACE="${REGISTRY_NAMESPACE:-registry}"
 readonly export REGISTRY_HOSTNAME="${REGISTRY_HOSTNAME:-registry.registry.svc.cluster.local}"
 
 # namespace name for Tekton Pipeline controller
-readonly export TEKTON_NAMESPACE="tekton-pipelines"
+readonly export TEKTON_NAMESPACE="${TEKTON_NAMESPACE:-tekton-pipelines}"
 
 # timeout employed during rollout status and deployments in general
 readonly export DEPLOYMENT_TIMEOUT="${DEPLOYMENT_TIMEOUT:-3m}"
+
+#
+# Helper Functions
+#
 
 # print error message and exit on error.
 function fail() {

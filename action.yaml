@@ -8,19 +8,29 @@ branding:
   icon: anchor
 inputs:
   tekton_version:
-    description: Tekton Pipelines release version
+    description: |
+      Tekton Pipelines release version
     required: false
     default: v0.45.0
+  feature_flags:
+    description: |
+      JSON payload for the Tekton Pipelines feature-flags, a configmap containing features toggles.
+      For instance '{ "enable-api-fields": "alpha" }'
+    required: false
+    default: '{}'
   cli_version:
-    description: Tekton CLI release version
+    description: |
+      Tekton CLI release version
     required: false
     default: v0.29.1
   setup_registry:
-    description: When enabled, the action deploys a Container Registry instance
+    description: |
+      When enabled, the action deploys a Container Registry instance
     required: false
     default: "true"
   patch_etc_hosts:
-    description: Patch "/etc/hosts" to alias the Container Registry hostname to "127.0.0.1"
+    description: |
+      Patch "/etc/hosts" to alias the Container Registry hostname to "127.0.0.1"
     required: false
     default: "true"
 runs:
@@ -38,6 +48,7 @@ runs:
       working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
+        INPUT_FEATURE_FLAGS: ${{ inputs.feature_flags }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: ./install-registry.sh
 
@@ -46,6 +57,7 @@ runs:
       working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
+        INPUT_FEATURE_FLAGS: ${{ inputs.feature_flags }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: ./install-tekton.sh
 
@@ -55,6 +67,7 @@ runs:
       working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
+        INPUT_FEATURE_FLAGS: ${{ inputs.feature_flags }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: sudo --preserve-env ./patch-etc-hosts.sh
 
@@ -63,5 +76,6 @@ runs:
       working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
+        INPUT_FEATURE_FLAGS: ${{ inputs.feature_flags }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: ./install-cli.sh

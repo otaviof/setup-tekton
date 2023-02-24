@@ -30,10 +30,11 @@ jobs:
 
       # self loading the action.yaml definitions, making possible to run the action defined on this
       # project directly
-      - env:
-          INPUT_TEKTON_VERSION: v0.45.0
-          INPUT_CLI_VERSION: v0.29.1
-        uses: ./
+      - uses: ./
+        with:
+          tekton_version: v0.45.0
+          feature_flags: '{ "enable-custom-tasks": "true" }'
+          cli_version: v0.29.1
 
       # assert the changes performed by this action
       - shell: bash

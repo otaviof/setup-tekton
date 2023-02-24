@@ -4,12 +4,15 @@
 
 set -a
 
-# action inputs translated as environment variables, tekton and cli versions
 readonly export INPUT_TEKTON_VERSION="${INPUT_TEKTON_VERSION:-}"
 readonly export INPUT_CLI_VERSION="${INPUT_CLI_VERSION:-}"
+readonly export INPUT_FEATURE_FLAGS="${INPUT_FEATURE_FLAGS:-}"
 
 [[ -z "${INPUT_TEKTON_VERSION}" ]] && \
 	fail "INPUT_TEKTON_VERSION environment variable is not set!"
+
+[[ -z "${INPUT_FEATURE_FLAGS}" ]] && \
+	fail "INPUT_FEATURE_FLAGS environment variable is not set!"
 
 [[ -z "${INPUT_CLI_VERSION}" ]] && \
 	fail "INPUT_CLI_VERSION environment variable is not set!"

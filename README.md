@@ -21,7 +21,9 @@ jobs:
 
       # setting up Tekton Pipelines, CLI and additional components...
       - uses: otaviof/setup-tekton@main
+        with:
           tekton_version: v0.45.0
+          feature_flags: '{}'
           cli_version: v0.29.1
           setup_registry: "true"
           patch_etc_hosts: "true"
@@ -34,6 +36,7 @@ The action uses the current Kubernetes instance available ([KinD][sigsKinD] for 
 | Input               | Required | Description                                     |
 |:--------------------|:--------:|:------------------------------------------------|
 | `tekton_version`    | `false`  | Target Tekton Pipeline version                  |
+| `feature_flags`     | `false`  | Tekton Pipeline feature flags as JSON payload   |
 | `cli_version`       | `false`  | Target Tekton CLI version                       |
 | `setup_registry`    | `false`  | Rollout a Container-Registry (v2)               |
 | `patch_etc_hosts`   | `false`  | Add Container-Registry hostname to `/etc/hosts` |
@@ -43,6 +46,31 @@ The action uses the current Kubernetes instance available ([KinD][sigsKinD] for 
 ## Tekton Pipelines
 
 [Tekton Pipelines][githubTektonPipeline] is deployed on the namespace `tekton-pipelines` and the involved deployments are followed until completion, so the setup process waits until the instances are available and in case of error the workflow is interrupted.
+
+### Feature-Flags
+
+Tekton Pipelines exposes [feature-flags][githubTektonFeatureFlags] using a `ConfigMap` named `feature-flags`. These flags can be set using the the input `feature_flags`, a JSON formated string containing the the respective flags and values. For example:
+
+```yaml
+---
+jobs:
+  setup-tekton:
+    steps:
+      - uses: otaviof/setup-tekton@main
+        with:
+          feature_flags: '{ "enable-custom-tasks": "true" }'
+```
+
+The result is observed on the following example:
+
+```
+$ kubectl --namespace=tekton-pipelines get configmap feature-flags --output=json |jq '.data'
+{
+  // ...
+  "enable-custom-tasks": "true",
+  // ...
+}
+```
 
 ## CLI (`tkn`)
 
@@ -68,6 +96,7 @@ Alternatively, you can run the scripts directly to rollout Tekton Pipelines and 
 cat >.env <<EOS
 export INPUT_TEKTON_VERSION="v0.42.0"
 export INPUT_CLI_VERSION="v0.29.1"
+export INPUT_FEATURE_FLAGS='{ "enable-custom-tasks": "true" }'
 EOS
 
 source .env
@@ -83,7 +112,8 @@ sudo ./install-cli.sh
 
 The script name reflects the component deployed and they are idempotent, you can run them more than once without side effects.
 
-[sigsKinD]: https://kind.sigs.k8s.io
-[githubTektonCLI]: https://github.com/tektoncd/cli
-[githubTektonPipeline]: https://github.com/tektoncd/pipeline
 [containerRegistry]: https://docs.docker.com/registry/spec/api/
+[githubTektonCLI]: https://github.com/tektoncd/cli
+[githubTektonFeatureFlags]: https://github.com/tektoncd/pipeline/blob/main/config/config-feature-flags.yaml
+[githubTektonPipeline]: https://github.com/tektoncd/pipeline
+[sigsKinD]: https://kind.sigs.k8s.io
