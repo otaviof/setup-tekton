@@ -4,6 +4,9 @@
 
 # namespace name for the container registry
 readonly export REGISTRY_NAMESPACE="${REGISTRY_NAMESPACE:-registry}"
+# the container registry uses the internal k8s service hosntame
+readonly export REGISTRY_HOSTNAME="${REGISTRY_HOSTNAME:-registry.registry.svc.cluster.local}"
+
 # namespace name for Tekton Pipeline controller
 readonly export TEKTON_NAMESPACE="tekton-pipelines"
 

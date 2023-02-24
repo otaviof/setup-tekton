@@ -19,10 +19,6 @@ inputs:
     description: When enabled, the action deploys a Container Registry instance
     required: false
     default: "true"
-  registry_hostname:
-    description: Container Registry hostname inside KinD
-    required: false
-    default: registry.registry.svc.cluster.local
   patch_etc_hosts:
     description: Patch "/etc/hosts" to alias the Container Registry hostname to "127.0.0.1"
     required: false
@@ -42,7 +38,6 @@ runs:
       working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
-        INPUT_REGISTRY_HOSTNAME: ${{ inputs.registry_hostname }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: ./install-registry.sh
 
@@ -51,7 +46,6 @@ runs:
       working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
-        INPUT_REGISTRY_HOSTNAME: ${{ inputs.registry_hostname }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: ./install-tekton.sh
 
@@ -61,7 +55,6 @@ runs:
       working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
-        INPUT_REGISTRY_HOSTNAME: ${{ inputs.registry_hostname }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: sudo --preserve-env ./patch-etc-hosts.sh
 
@@ -70,6 +63,5 @@ runs:
       working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
-        INPUT_REGISTRY_HOSTNAME: ${{ inputs.registry_hostname }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
       run: ./install-cli.sh

@@ -33,7 +33,6 @@ jobs:
       # project directly
       - env:
           INPUT_TEKTON_VERSION: v0.45.0
-          INPUT_REGISTRY_HOSTNAME: registry.registry.svc.cluster.local
           INPUT_CLI_VERSION: v0.29.1
         uses: ./
 

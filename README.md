@@ -1,3 +1,5 @@
+[![use-action](https://github.com/otaviof/setup-tekton/actions/workflows/use-action.yaml/badge.svg)](https://github.com/otaviof/setup-tekton/actions/workflows/use-action.yaml)
+
 `setup-tekton` GitHub Actions
 -----------------------------
 
@@ -22,7 +24,6 @@ jobs:
           tekton_version: v0.45.0
           cli_version: v0.29.1
           setup_registry: "true"
-          registry_hostname: registry.registry.svc.cluster.local
           patch_etc_hosts: "true"
 ```
 
@@ -35,9 +36,7 @@ The action uses the current Kubernetes instance available ([KinD][sigsKinD] for 
 | `tekton_version`    | `false`  | Target Tekton Pipeline version                  |
 | `cli_version`       | `false`  | Target Tekton CLI version                       |
 | `setup_registry`    | `false`  | Rollout a Container-Registry (v2)               |
-| `registry_hostname` | `false`  | Container-Registry hostname                     |
 | `patch_etc_hosts`   | `false`  | Add Container-Registry hostname to `/etc/hosts` |
-
 
 # Components
 
@@ -53,13 +52,13 @@ The action uses the current Kubernetes instance available ([KinD][sigsKinD] for 
 
 A [Container-Registry][containerRegistry] instance is deployed on the `registry` namespace using the same rollout approach than Tekton Pipelines.
 
-The registry is available by default on the port `32222` and uses the informed hostname, by default `registry.registry.svc.cluster.local`, which means the container images will look like the example below:
+The registry is available on port `32222` and uses the Kubernetes internal service hostname, `registry.registry.svc.cluster.local`, which means the fully qualified container images (plus tag) will look like the example below:
 
 ```text
 registry.registry.svc.cluster.local:32222/namespace/project:tag
 ```
 
-The registry does not require authentication and uses HTTP protocol, it will be available outside of the Kubernetes instance as well, the input `patch_etc_hosts` makes the registry hostname resolve to `127.0.0.1` and the registry service expose the port `32222` as a `hostPort` as well.
+The registry does not require authentication, uses HTTP protocol, is available outside of the Kubernetes instance as well. The Action Input `patch_etc_hosts` makes the registry hostname resolve to `127.0.0.1` and the service exposes the port `32222` as a `hostPort` too.
 
 # Scripts
 
@@ -67,15 +66,14 @@ Alternatively, you can run the scripts directly to rollout Tekton Pipelines and 
 
 ```bash
 cat >.env <<EOS
-export INPUT_TEKTON_VERSION="v0.41.0"
-export INPUT_REGISTRY_HOSTNAME="registry.registry.svc.cluster.local"
+export INPUT_TEKTON_VERSION="v0.42.0"
 export INPUT_CLI_VERSION="v0.29.1"
 EOS
 
 source .env
 ```
 
-There are plugins to automatically load the `.env` file, but once the required environment variables are set, you can invoke each script individually:
+There are shell plugins to automatically load the `.env` file, once the required environment variables are set you can invoke each script individually:
 
 ```bash
 ./install-tekton.sh
@@ -83,7 +81,7 @@ There are plugins to automatically load the `.env` file, but once the required e
 sudo ./install-cli.sh
 ```
 
-The script name reflects the component deployed and they are idempotent, you can execute them more than once without side effects.
+The script name reflects the component deployed and they are idempotent, you can run them more than once without side effects.
 
 [sigsKinD]: https://kind.sigs.k8s.io
 [githubTektonCLI]: https://github.com/tektoncd/cli
