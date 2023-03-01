@@ -5,13 +5,13 @@
 
 set -eu -o pipefail
 
-source common.sh
-source inputs.sh
+source "$(dirname ${BASH_SOURCE[0]})/common.sh"
+source "$(dirname ${BASH_SOURCE[0]})/inputs.sh"
 
-readonly ETC_HOSTS="/etc/hosts"
-readonly HOSTS_ENTRY="127.0.0.1 ${REGISTRY_HOSTNAME}"
+readonly etc_hosts="/etc/hosts"
+readonly hosts_entry="127.0.0.1 ${REGISTRY_HOSTNAME}"
 
-phase "Patching '${ETC_HOSTS}' with '${HOSTS_ENTRY}' entry"
-if ! grep -q "${HOSTS_ENTRY}" ${ETC_HOSTS} ; then
-	echo "${HOSTS_ENTRY}" >>${ETC_HOSTS}
+phase "Patching '${etc_hosts}' with '${hosts_entry}' entry"
+if ! grep -q "${hosts_entry}" ${etc_hosts} ; then
+	echo "${hosts_entry}" >>${etc_hosts}
 fi

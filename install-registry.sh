@@ -6,7 +6,7 @@
 shopt -s inherit_errexit
 set -eu -o pipefail
 
-source common.sh
+source "$(dirname ${BASH_SOURCE[0]})/common.sh"
 
 phase "Deploying a Container Registry on '${REGISTRY_NAMESPACE}' namespace"
 

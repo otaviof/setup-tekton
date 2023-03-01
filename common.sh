@@ -1,5 +1,5 @@
 #
-# Enviroment Variables with Default Values
+# Environment Variables with Default Values
 #
 
 # namespace name for the container registry
