@@ -11,7 +11,7 @@ readonly export REGISTRY_HOSTNAME="${REGISTRY_HOSTNAME:-registry.registry.svc.cl
 readonly export TEKTON_NAMESPACE="${TEKTON_NAMESPACE:-tekton-pipelines}"
 
 # timeout employed during rollout status and deployments in general
-readonly export DEPLOYMENT_TIMEOUT="${DEPLOYMENT_TIMEOUT:-3m}"
+readonly export DEPLOYMENT_TIMEOUT="${DEPLOYMENT_TIMEOUT:-5m}"
 
 #
 # Helper Functions
