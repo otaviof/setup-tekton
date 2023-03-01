@@ -34,7 +34,7 @@ jobs:
         with:
           tekton_version: v0.45.0
           feature_flags: '{ "enable-custom-tasks": "true" }'
-          cli_version: v0.29.1
+          cli_version: latest
 
       # assert the changes performed by this action
       - shell: bash

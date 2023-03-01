@@ -20,9 +20,9 @@ inputs:
     default: '{}'
   cli_version:
     description: |
-      Tekton CLI release version
+      Tekton CLI (tkn) version
     required: false
-    default: v0.29.1
+    default: latest
   setup_registry:
     description: |
       When enabled, the action deploys a Container Registry instance
@@ -38,8 +38,7 @@ runs:
   steps:
     # pre-flight checks, making sure the dependencies needed for the upcoming steps are available
     - shell: bash
-      working-directory: ${{ github.action_path }}
-      run: ./probe.sh
+      run: ${{ github.action_path }}/probe.sh
 
     # deploying the container registry when input flag is set, waiting for the deployment to reach
     # ready status before proceeding
@@ -50,32 +49,26 @@ runs:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
         INPUT_FEATURE_FLAGS: ${{ inputs.feature_flags }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
-      run: ./install-registry.sh
+      run: ${{ github.action_path }}/install-registry.sh
 
     # deploying tekton pipline controller and dependencies, waiting for it to reach ready status
     - shell: bash
-      working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
         INPUT_FEATURE_FLAGS: ${{ inputs.feature_flags }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
-      run: ./install-tekton.sh
+      run: ${{ github.action_path }}/install-tekton.sh
 
     # patches the /etc/hosts to include the container registry hostname resolving to 127.0.0.1
     - shell: bash
       if: ${{ inputs.patch_etc_hosts == 'true' }}
-      working-directory: ${{ github.action_path }}
       env:
         INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
         INPUT_FEATURE_FLAGS: ${{ inputs.feature_flags }}
         INPUT_CLI_VERSION: ${{ inputs.cli_version }}
-      run: sudo --preserve-env ./patch-etc-hosts.sh
+      run: sudo --preserve-env ${{ github.action_path }}/patch-etc-hosts.sh
 
     # installs the pre-compiled Tekton CLI
-    - shell: bash
-      working-directory: ${{ github.action_path }}
-      env:
-        INPUT_TEKTON_VERSION: ${{ inputs.tekton_version }}
-        INPUT_FEATURE_FLAGS: ${{ inputs.feature_flags }}
-        INPUT_CLI_VERSION: ${{ inputs.cli_version }}
-      run: ./install-cli.sh
+    - uses: otaviof/setup-tekton-cli@main
+      with:
+        cli_version: ${{ inputs.cli_version }}

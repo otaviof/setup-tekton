@@ -24,7 +24,7 @@ jobs:
         with:
           tekton_version: v0.45.0
           feature_flags: '{}'
-          cli_version: v0.29.1
+          cli_version: latest
           setup_registry: "true"
           patch_etc_hosts: "true"
 ```
