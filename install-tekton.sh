@@ -20,6 +20,9 @@ phase "Waiting for Tekton components"
 rollout_status "${TEKTON_NAMESPACE}" "tekton-pipelines-controller"
 rollout_status "${TEKTON_NAMESPACE}" "tekton-pipelines-webhook"
 
+# graceful wait to give some more time for the tekton componets stabilize
+sleep 60
+
 phase "Setting up the feature-flag(s): '${INPUT_FEATURE_FLAGS}"
 if [ "${INPUT_FEATURE_FLAGS}" != "{}" ]; then
 	kubectl patch configmap/feature-flags \
