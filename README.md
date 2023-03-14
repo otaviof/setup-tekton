@@ -1,7 +1,7 @@
 [![use-action](https://github.com/otaviof/setup-tekton/actions/workflows/use-action.yaml/badge.svg)](https://github.com/otaviof/setup-tekton/actions/workflows/use-action.yaml)
 
-`setup-tekton` GitHub Actions
------------------------------
+`setup-tekton` (Moved to [`openshift-pipelines/setup-tektoncd`][newRepo])
+-------------------------------------------------------------------------
 
 Action to rollout [Tekton Pipelines][githubTektonPipeline], [CLI (`tkn`)][githubTektonCLI] and a [Container-Registry][containerRegistry] instance, setting up the environment for testing using these components.
 
@@ -117,3 +117,4 @@ The script name reflects the component deployed and they are idempotent, you can
 [githubTektonFeatureFlags]: https://github.com/tektoncd/pipeline/blob/main/config/config-feature-flags.yaml
 [githubTektonPipeline]: https://github.com/tektoncd/pipeline
 [sigsKinD]: https://kind.sigs.k8s.io
+[newRepo]: https://github.com/openshift-pipelines/setup-tektoncd
